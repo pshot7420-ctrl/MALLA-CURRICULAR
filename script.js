@@ -1,362 +1,117 @@
-// Malla interactiva (clic para aprobar; desbloquea ramos que dependen de ese requisito)
-// Guarda estado en localStorage.
+const STORAGE_KEY = "malla_ii_v2_done";
 
-const STORAGE_KEY = "malla_ii_v1_done";
-
-/** Normaliza nombres para mapearlos de forma robusta */
 const keyOf = (name) =>
   name
     .trim()
     .toUpperCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")   // sin tildes
+    .replace(/[\u0300-\u036f]/g, "")
     .replace(/\s+/g, " ")
-    .replace(/[“”"']/g, "")
-    .replace(/[()]/g, "")
     .trim();
 
-/** Datos (por ciclo) + lo que ABRE (dependientes) */
-const cycles = [
-  {
-    title: "Ciclo 1",
-    courses: [
-      { name: "ACTIVIDADES ARTÍSTICAS Y DEPORTIVAS", opens: [] },
-      { name: "TALLER DE MÉTODOS DEL ESTUDIO UNIVERSITARIO", opens: [] },
-      { name: "TALLER DE ARGUMENTACIÓN ORAL Y ESCRITA", opens: [] },
-      { name: "INTRODUCCIÓN A LA INGENIERÍA INDUSTRIAL", opens: ["ADMINISTRACIÓN INDUSTRIAL"] },
-      { name: "MATEMÁTICAS", opens: ["MATEMÁTICA I", "FÍSICA I"] },
-      { name: "QUÍMICA", opens: ["QUÍMICA INDUSTRIAL"] },
-      { name: "INGLÉS I", opens: ["INGLÉS II"] },
-    ],
-  },
-  {
-    title: "Ciclo 2",
-    courses: [
-      { name: "TALLER DE INTERPRETACIÓN Y REDACCIÓN DE TEXTOS", opens: [] },
-      { name: "FILOSOFÍA Y ÉTICA", opens: [] },
-      { name: "PSICOLOGÍA GENERAL", opens: [] },
-      { name: "FORMACIÓN HISTÓRICA DEL PERÚ", opens: [] },
-      { name: "MATEMÁTICA I", opens: [] },
-      { name: "FÍSICA I", opens: ["FÍSICA II"] },
-      { name: "QUÍMICA INDUSTRIAL", opens: [] },
-      { name: "INGLÉS II", opens: [] },
-    ],
-  },
-  {
-    title: "Ciclo 3",
-    courses: [
-      { name: "RECURSOS NATURALES Y MEDIO AMBIENTE", opens: [] },
-      { name: "REALIDAD NACIONAL", opens: [] },
-      { name: "ALGORITMOS COMPUTACIONALES", opens: ["MINERÍA DE DATOS"] },
-      { name: "MATEMÁTICA II", opens: ["FUNDAMENTOS DE ECONOMÍA", "ESTADÍSTICA Y PROBABILIDADES"] },
-      { name: "FÍSICA II", opens: ["INGENIERÍA MECÁNICA ELÉCTRICA"] },
-      { name: "ADMINISTRACIÓN INDUSTRIAL", opens: ["INGENIERÍA DE PROCESOS INDUSTRIALES", "INGENIERÍA DE MÉTODOS I"] },
-      { name: "GLOBALIZACIÓN E INTEGRACIÓN", opens: [] },
-    ],
-  },
-  {
-    title: "Ciclo 4",
-    courses: [
-      { name: "FUNDAMENTOS DE ECONOMÍA", opens: ["INGENIERÍA DE COSTOS Y PRESUPUESTOS"] },
-      { name: "MINERÍA DE DATOS", opens: ["LENGUAJES DE PROGRAMACIÓN"] },
-      { name: "INGENIERÍA DE PROCESOS INDUSTRIALES", opens: [] },
-      { name: "DIBUJO EN INGENIERÍA", opens: ["DISEÑO ASISTIDO POR COMPUTADORA"] },
-      { name: "ESTADÍSTICA Y PROBABILIDADES", opens: ["ESTADÍSTICA INFERENCIAL"] },
-      { name: "INGENIERÍA MECÁNICA ELÉCTRICA", opens: ["INGENIERÍA DE MATERIALES"] },
-    ],
-  },
-  {
-    title: "Ciclo 5",
-    courses: [
-      { name: "INGENIERÍA DE COSTOS Y PRESUPUESTOS", opens: ["INGENIERÍA FINANCIERA"] },
-      { name: "LENGUAJES DE PROGRAMACIÓN", opens: ["INVESTIGACIÓN DE OPERACIONES"] },
-      { name: "INGENIERÍA DE MÉTODOS I", opens: ["INGENIERÍA DE MÉTODOS II"] },
-      { name: "ESTADÍSTICA INFERENCIAL", opens: ["DISEÑO DE EXPERIMENTOS"] },
-      { name: "INGENIERÍA DE MATERIALES", opens: [] },
-      { name: "DISEÑO ASISTIDO POR COMPUTADORA", opens: ["TECNOLOGÍA BÁSICA DE FABRICACIÓN"] },
-    ],
-  },
-  {
-    title: "Ciclo 6",
-    courses: [
-      { name: "INGENIERÍA FINANCIERA", opens: ["INGENIERÍA ECONÓMICA"] },
-      { name: "INVESTIGACIÓN DE OPERACIONES", opens: ["MODELAMIENTO Y SIMULACIÓN DE PROCESOS"] },
-      { name: "INGENIERÍA DE MÉTODOS II", opens: ["LOGÍSTICA Y CADENA DE SUMINISTRO"] },
-      { name: "DISEÑO DE EXPERIMENTOS", opens: ["CONTROL ESTADÍSTICO DE LA CALIDAD"] },
-      { name: "TECNOLOGÍA BÁSICA DE FABRICACIÓN", opens: ["INGENIERÍA DE PLANTA Y MANTENIMIENTO"] },
-    ],
-  },
-  {
-    title: "Ciclo 7",
-    courses: [
-      { name: "INGENIERÍA ECONÓMICA", opens: ["DISEÑO Y EVALUACIÓN DE PROYECTOS DE INVERSIÓN"] },
-      { name: "MODELAMIENTO Y SIMULACIÓN DE PROCESOS", opens: ["INGENIERÍA DE PROCESOS EMPRESARIALES"] },
-      { name: "LOGÍSTICA Y CADENA DE SUMINISTRO", opens: ["PLANEAMIENTO Y CONTROL DE OPERACIONES"] },
-      { name: "CONTROL ESTADÍSTICO DE LA CALIDAD", opens: ["SISTEMA DE GESTIÓN DE CALIDAD"] },
-      { name: "INGENIERÍA DE PLANTA Y MANTENIMIENTO", opens: [] },
-    ],
-  },
-  {
-    title: "Ciclo 8",
-    courses: [
-      { name: "DISEÑO Y EVALUACIÓN DE PROYECTOS DE INVERSIÓN", opens: ["GERENCIA DE PROYECTOS DE INGENIERÍA"] },
-      { name: "PLANEAMIENTO Y CONTROL DE OPERACIONES", opens: ["MARKETING E INVESTIGACIÓN DE MERCADOS INDUSTRIALES"] },
-      { name: "TEORÍA Y METODOLOGÍA DE LA INVESTIGACIÓN", opens: [] },
-      { name: "INGENIERÍA DE PROCESOS EMPRESARIALES", opens: [] },
-      { name: "SISTEMA DE GESTIÓN DE CALIDAD", opens: ["SEGURIDAD Y SALUD EN EL TRABAJO"] },
-      { name: "MANUFACTURA ASISTIDA POR COMPUTADORA", opens: [] },
-    ],
-  },
-  {
-    title: "Ciclo 9",
-    courses: [
-      { name: "GERENCIA DE PROYECTOS DE INGENIERÍA", opens: [] },
-      { name: "ELECTIVO (C9)", opens: [] },
-      { name: "AUTOMATIZACIÓN INDUSTRIAL", opens: [] },
-      { name: "MARKETING E INVESTIGACIÓN DE MERCADOS INDUSTRIALES", opens: ["GESTIÓN DEL TALENTO HUMANO Y REINGENIERÍA ORGANIZACIONAL"] },
-      { name: "TALLER DE INVESTIGACIÓN I", opens: ["TALLER DE INVESTIGACIÓN II"] },
-      { name: "SEGURIDAD Y SALUD EN EL TRABAJO", opens: ["GESTIÓN AMBIENTAL Y RESPONSABILIDAD SOCIAL"] },
-    ],
-  },
-  {
-    title: "Ciclo 10",
-    courses: [
-      { name: "ELECTIVO (C10-1)", opens: [] },
-      { name: "ELECTIVO (C10-2)", opens: [] },
-      { name: "GESTIÓN DEL TALENTO HUMANO Y REINGENIERÍA ORGANIZACIONAL", opens: [] },
-      { name: "TALLER DE INVESTIGACIÓN II", opens: [] },
-      { name: "GESTIÓN AMBIENTAL Y RESPONSABILIDAD SOCIAL", opens: [] },
-      { name: "ELECTIVO (C10-3)", opens: [] },
-      { name: "DEONTOLOGÍA PARA INGENIERÍA", opens: [] },
-    ],
-  },
-];
+/* ===== DATOS DE LA MALLA ===== */
+const cycles = [ /* ← AQUÍ VA EXACTAMENTE EL MISMO ARRAY
+                    DE CICLOS QUE YA TIENES
+                    (NO CAMBIA) */ ];
 
-/**
- * Construye un mapa de prerequisitos (derivado de "opens")
- * Para cada curso B abierto por A => prereq[B] incluye A
- */
+/* ===== CONSTRUIR MAPA DE REQUISITOS ===== */
 function buildPrereqMap() {
-  const prereq = new Map(); // key(course) => Set(keys de prereq)
-  const all = new Map();    // key(course) => original name
+  const prereq = new Map();
 
-  // Registrar todos los cursos
   for (const cyc of cycles) {
     for (const c of cyc.courses) {
-      all.set(keyOf(c.name), c.name);
-    }
-  }
-
-  // Agregar prerequisitos según opens
-  for (const cyc of cycles) {
-    for (const c of cyc.courses) {
-      const fromKey = keyOf(c.name);
-      for (const opened of c.opens || []) {
-        const toKey = keyOf(opened);
-
-        // Si el curso abierto no existe como botón (p.ej. por diferencia de escritura),
-        // igual lo registramos para no perder la lógica.
-        if (!all.has(toKey)) all.set(toKey, opened);
-
-        if (!prereq.has(toKey)) prereq.set(toKey, new Set());
-        prereq.get(toKey).add(fromKey);
+      for (const next of c.opens || []) {
+        const nextKey = keyOf(next);
+        if (!prereq.has(nextKey)) prereq.set(nextKey, new Set());
+        prereq.get(nextKey).add(keyOf(c.name));
       }
     }
   }
-
-  return { prereq, all };
+  return prereq;
 }
 
-const { prereq, all } = buildPrereqMap();
-
-/** Estado: cursos aprobados (Set de keys normalizados) */
+const prereqMap = buildPrereqMap();
 let done = loadDone();
 
-/** Render UI */
-const gridEl = document.getElementById("grid");
-const progressBar = document.getElementById("progressBar");
-const progressText = document.getElementById("progressText");
-
+/* ===== LÓGICA ===== */
 function isUnlocked(courseKey) {
-  const reqs = prereq.get(courseKey);
-  if (!reqs || reqs.size === 0) return true; // sin prerequisitos
+  const reqs = prereqMap.get(courseKey);
+  if (!reqs) return true;
   for (const r of reqs) if (!done.has(r)) return false;
   return true;
 }
 
-function courseStatus(courseKey) {
-  if (done.has(courseKey)) return "done";
-  return isUnlocked(courseKey) ? "available" : "locked";
-}
+/* ===== RENDER ===== */
+const gridEl = document.getElementById("grid");
+const progressBar = document.getElementById("progressBar");
+const progressText = document.getElementById("progressText");
 
 function render() {
   gridEl.innerHTML = "";
 
-  // Total de cursos visibles (botones)
-  const allVisibleKeys = [];
-  for (const cyc of cycles) for (const c of cyc.courses) allVisibleKeys.push(keyOf(c.name));
+  let total = 0;
+  let approved = 0;
 
-  // Render por ciclo
   for (const cyc of cycles) {
     const section = document.createElement("section");
     section.className = "cycle card";
 
-    const h2 = document.createElement("h2");
-    h2.textContent = cyc.title;
-    section.appendChild(h2);
-
-    const sub = document.createElement("div");
-    sub.className = "sub";
-    sub.textContent = "Haz clic para aprobar/desaprobar";
-    section.appendChild(sub);
+    section.innerHTML = `<h2>${cyc.title}</h2>
+      <div class="sub">Selecciona los cursos aprobados</div>`;
 
     for (const c of cyc.courses) {
       const k = keyOf(c.name);
-      const status = courseStatus(k);
+      total++;
+      if (done.has(k)) approved++;
+
+      const unlocked = isUnlocked(k);
 
       const btn = document.createElement("button");
+      btn.className = `course ${done.has(k) ? "done" : unlocked ? "available" : "locked"}`;
       btn.type = "button";
-      btn.className = `course ${status}`;
-      btn.dataset.key = k;
 
-      const name = document.createElement("div");
-      name.className = "name";
-      name.textContent = c.name.replace(/\s+/g, " ").trim();
-      btn.appendChild(name);
+      btn.innerHTML = `
+        <div class="name">${c.name}</div>
+        ${
+          c.opens.length
+            ? `<div class="meta"><span class="badge">Habilita</span>${c.opens.join(", ")}</div>`
+            : ""
+        }
+      `;
 
-      const meta = document.createElement("div");
-      meta.className = "meta";
-
-      // Mostrar "abre: ..." (como pediste)
-      if (c.opens && c.opens.length > 0) {
-        meta.innerHTML = `<span class="badge">abre</span>${c.opens.join(", ")}`;
-      } else {
-        meta.textContent = "—";
-      }
-      btn.appendChild(meta);
-
-      // Bloqueado => no clickable
-      if (status === "locked") {
-        btn.disabled = true;
-        btn.title = "Bloqueado: te faltan requisitos previos.";
-      } else {
-        btn.disabled = false;
-        btn.title = status === "done" ? "Aprobado (clic para desmarcar)" : "Disponible (clic para aprobar)";
-        btn.addEventListener("click", () => toggleDone(k));
-      }
-
+      btn.addEventListener("click", () => toggleCourse(k));
       section.appendChild(btn);
     }
 
     gridEl.appendChild(section);
   }
 
-  updateProgress(allVisibleKeys);
+  const pct = Math.round((approved / total) * 100);
+  progressBar.style.width = `${pct}%`;
+  progressText.textContent = `${approved} / ${total} cursos aprobados (${pct}%)`;
 }
 
-function toggleDone(courseKey) {
-  if (done.has(courseKey)) {
-    // Al desmarcar, también hay que desmarcar todo lo que dependa de él (si queda bloqueado)
-    done.delete(courseKey);
-    cascadeLock();
+function toggleCourse(k) {
+  if (done.has(k)) {
+    done.delete(k);
   } else {
-    // Solo permitir aprobar si está desbloqueado
-    if (!isUnlocked(courseKey)) return;
-    done.add(courseKey);
+    done.add(k);
   }
-
   saveDone();
   render();
 }
 
-/** Si desmarco un requisito, desmarcar cursos que ya no cumplen prerequisitos */
-function cascadeLock() {
-  let changed = true;
-  while (changed) {
-    changed = false;
-    for (const k of Array.from(done)) {
-      if (!isUnlocked(k)) {
-        done.delete(k);
-        changed = true;
-      }
-    }
-  }
-}
-
-/** Progress */
-function updateProgress(allVisibleKeys) {
-  const total = allVisibleKeys.length;
-  let approved = 0;
-  for (const k of allVisibleKeys) if (done.has(k)) approved++;
-
-  const pct = total === 0 ? 0 : Math.round((approved / total) * 100);
-  progressBar.style.width = `${pct}%`;
-  progressText.textContent = `${approved} / ${total} aprobados (${pct}%)`;
-}
-
-/** Storage */
+/* ===== STORAGE ===== */
 function loadDone() {
-  try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return new Set();
-    const arr = JSON.parse(raw);
-    if (!Array.isArray(arr)) return new Set();
-    return new Set(arr.map(String));
+  try {
+    return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY)) || []);
   } catch {
     return new Set();
   }
 }
+
 function saveDone() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(done)));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify([...done]));
 }
 
-/** Buttons */
-document.getElementById("btnReset").addEventListener("click", () => {
-  done = new Set();
-  saveDone();
-  render();
-});
-
-document.getElementById("btnExport").addEventListener("click", () => {
-  const payload = {
-    version: 1,
-    savedAt: new Date().toISOString(),
-    done: Array.from(done),
-  };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "malla_progreso.json";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-});
-
-document.getElementById("fileImport").addEventListener("change", async (e) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
-
-  try{
-    const text = await file.text();
-    const data = JSON.parse(text);
-    if (!data || !Array.isArray(data.done)) throw new Error("Formato inválido");
-    done = new Set(data.done.map(String));
-    // Limpieza: deja solo cursos que existen como botones
-    // (si importaste progreso de otra versión)
-    const visible = new Set();
-    for (const cyc of cycles) for (const c of cyc.courses) visible.add(keyOf(c.name));
-    done = new Set(Array.from(done).filter(k => visible.has(k)));
-
-    saveDone();
-    render();
-  } catch (err) {
-    alert("No se pudo importar el archivo. Asegúrate de que sea un JSON exportado desde esta malla.");
-  } finally {
-    e.target.value = "";
-  }
-});
-
-/** Inicial */
 render();
