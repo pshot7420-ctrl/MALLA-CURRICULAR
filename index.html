@@ -1,54 +1,36 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
   <title>Malla Interactiva – Ingeniería Industrial</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <h1>Malla Interactiva</h1>
-      <p>Ingeniería Industrial · 10 ciclos</p>
-    </div>
+<header class="topbar">
+  <h1>Malla Interactiva 🌸</h1>
 
-    <div class="actions">
-      <button id="btnReset" class="btn btn-ghost" type="button">Reiniciar</button>
-      <button id="btnExport" class="btn" type="button">Exportar</button>
-      <label class="btn btn-ghost file">
-        Importar
-        <input id="fileImport" type="file" accept="application/json" />
-      </label>
-    </div>
-  </header>
+  <div class="controls">
+    <label>
+      Ciclo actual:
+      <select id="currentCycle"></select>
+    </label>
 
-  <main class="container">
-    <section class="legend card">
-      <div class="legend-item">
-        <span class="dot locked"></span><span>Bloqueado</span>
-      </div>
-      <div class="legend-item">
-        <span class="dot available"></span><span>Disponible</span>
-      </div>
-      <div class="legend-item">
-        <span class="dot done"></span><span>Aprobado</span>
-      </div>
-      <div class="progress" aria-label="Progreso">
-        <div class="progress-bar" id="progressBar" style="width:0%"></div>
-      </div>
-      <div class="progress-text" id="progressText">0 / 0 aprobados</div>
-    </section>
+    <button id="toggleTheme">🌙</button>
+    <button id="reset">Reiniciar</button>
+  </div>
+</header>
 
-    <section id="grid" class="grid" aria-label="Malla por ciclos">
-      <!-- Se renderiza con JS -->
-    </section>
-  </main>
+<main>
+  <div class="progress-box">
+    <div class="progress-bar" id="progressBar"></div>
+    <p id="progressText"></p>
+    <p id="alertText" class="alert"></p>
+  </div>
 
-  <footer class="footer">
-    <small>Tip: clic en un ramo para aprobar/desaprobar. Se guarda automáticamente.</small>
-  </footer>
+  <section id="grid" class="grid"></section>
+</main>
 
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
