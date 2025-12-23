@@ -100,3 +100,8 @@ document.getElementById("reset").onclick = ()=>{
 };
 
 render();
+  }
+};
+
+render();
+
