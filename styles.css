@@ -1,0 +1,23 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #ffe6f2;
+  color: #5a1236;
+  padding: 20px;
+}
+
+button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 6px 0;
+  background: #ff66b2;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button.done {
+  background: #b30059;
+}
