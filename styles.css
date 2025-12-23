@@ -1,23 +1,95 @@
-body {
-  font-family: Arial, sans-serif;
-  background: #ffe6f2;
-  color: #5a1236;
-  padding: 20px;
+:root{
+  --pink-1:#ffe6f2;
+  --pink-2:#ffb3d9;
+  --pink-3:#ff66b2;
+  --pink-4:#cc0066;
+
+  --bg:#fff0f7;
+  --card:#ffffff;
+  --text:#4a1233;
 }
 
-button {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  margin: 6px 0;
-  background: #ff66b2;
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
+body{
+  margin:0;
+  font-family: system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
 
-button.done {
-  background: #b30059;
+h1{
+  margin:0;
+}
+
+header{
+  background: linear-gradient(90deg,var(--pink-2),var(--pink-3));
+  color:white;
+  padding:16px 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+main{
+  padding:20px;
+}
+
+/* ===== PROGRESO ===== */
+#progress{
+  margin-bottom:20px;
+  font-weight:600;
+}
+
+/* ===== GRID DE CICLOS ===== */
+#grid{
+  display:grid;
+  grid-template-columns: repeat(10, minmax(220px, 1fr));
+  gap:16px;
+  overflow-x:auto;
+  padding-bottom:20px;
+}
+
+/* ===== CADA CICLO ===== */
+.cycle{
+  background: var(--card);
+  border-radius:14px;
+  padding:12px;
+  min-width:220px;
+  box-shadow:0 6px 16px rgba(0,0,0,.08);
+}
+
+.cycle h3{
+  margin:0 0 10px;
+  text-align:center;
+  font-size:16px;
+  color:var(--pink-4);
+}
+
+/* ===== CURSOS ===== */
+.course{
+  width:100%;
+  margin-bottom:8px;
+  padding:8px;
+  border-radius:10px;
+  border:none;
+  background:var(--pink-1);
+  color:var(--text);
+  cursor:pointer;
+  font-size:13px;
+  text-align:left;
+  transition:.15s;
+}
+
+.course:hover{
+  background:var(--pink-2);
+}
+
+.course.done{
+  background:var(--pink-3);
+  color:white;
+  font-weight:600;
+}
+
+.course.locked{
+  opacity:.4;
+  cursor:not-allowed;
 }
