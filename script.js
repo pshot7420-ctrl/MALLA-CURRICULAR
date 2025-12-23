@@ -1,117 +1,102 @@
-const STORAGE_KEY = "malla_ii_v2_done";
+const STORAGE = "malla_v3";
+const THEME = "theme";
+let done = new Set(JSON.parse(localStorage.getItem(STORAGE)) || []);
+let currentCycle = 1;
 
-const keyOf = (name) =>
-  name
-    .trim()
-    .toUpperCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
+const cycles = [
+  { title:"Ciclo 1", courses:[
+    {n:"ACTIVIDADES ARTÍSTICAS Y DEPORTIVAS", h:[]},
+    {n:"TALLER DE MÉTODOS DEL ESTUDIO UNIVERSITARIO", h:[]},
+    {n:"TALLER DE ARGUMENTACIÓN ORAL Y ESCRITA", h:[]},
+    {n:"INTRODUCCIÓN A LA INGENIERÍA INDUSTRIAL", h:["ADMINISTRACIÓN INDUSTRIAL"]},
+    {n:"MATEMÁTICAS", h:["MATEMÁTICA I","FÍSICA I"]},
+    {n:"QUÍMICA", h:["QUÍMICA INDUSTRIAL"]},
+    {n:"INGLÉS I", h:["INGLÉS II"]}
+  ]},
+  /* 🔴 SIGUEN TODOS LOS CICLOS IGUAL QUE ANTES 🔴 */
+];
 
-/* ===== DATOS DE LA MALLA ===== */
-const cycles = [ /* ← AQUÍ VA EXACTAMENTE EL MISMO ARRAY
-                    DE CICLOS QUE YA TIENES
-                    (NO CAMBIA) */ ];
+const key = t => t.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
 
-/* ===== CONSTRUIR MAPA DE REQUISITOS ===== */
-function buildPrereqMap() {
-  const prereq = new Map();
+const prereq = {};
+cycles.forEach(c =>
+  c.courses.forEach(r =>
+    r.h.forEach(d => {
+      prereq[key(d)] ??= new Set();
+      prereq[key(d)].add(key(r.n));
+    })
+  )
+);
 
-  for (const cyc of cycles) {
-    for (const c of cyc.courses) {
-      for (const next of c.opens || []) {
-        const nextKey = keyOf(next);
-        if (!prereq.has(nextKey)) prereq.set(nextKey, new Set());
-        prereq.get(nextKey).add(keyOf(c.name));
-      }
-    }
-  }
-  return prereq;
-}
-
-const prereqMap = buildPrereqMap();
-let done = loadDone();
-
-/* ===== LÓGICA ===== */
-function isUnlocked(courseKey) {
-  const reqs = prereqMap.get(courseKey);
-  if (!reqs) return true;
-  for (const r of reqs) if (!done.has(r)) return false;
-  return true;
-}
-
-/* ===== RENDER ===== */
-const gridEl = document.getElementById("grid");
+const grid = document.getElementById("grid");
 const progressBar = document.getElementById("progressBar");
 const progressText = document.getElementById("progressText");
+const alertText = document.getElementById("alertText");
 
 function render() {
-  gridEl.innerHTML = "";
+  grid.innerHTML = "";
+  let total = 0, ok = 0, dragged = 0;
 
-  let total = 0;
-  let approved = 0;
+  cycles.forEach((c,i)=>{
+    const sec = document.createElement("div");
+    sec.className = "cycle";
+    sec.innerHTML = `<h3>${c.title}</h3>`;
 
-  for (const cyc of cycles) {
-    const section = document.createElement("section");
-    section.className = "cycle card";
-
-    section.innerHTML = `<h2>${cyc.title}</h2>
-      <div class="sub">Selecciona los cursos aprobados</div>`;
-
-    for (const c of cyc.courses) {
-      const k = keyOf(c.name);
+    c.courses.forEach(r=>{
       total++;
-      if (done.has(k)) approved++;
+      const k = key(r.n);
+      const approved = done.has(k);
+      if (approved) ok++;
 
-      const unlocked = isUnlocked(k);
+      if (!approved && i+1 < currentCycle) dragged++;
 
       const btn = document.createElement("button");
-      btn.className = `course ${done.has(k) ? "done" : unlocked ? "available" : "locked"}`;
-      btn.type = "button";
+      btn.className = `course ${approved?"done":""}`;
+      btn.innerHTML = r.n;
+      btn.onclick = ()=>toggle(k);
+      sec.appendChild(btn);
+    });
 
-      btn.innerHTML = `
-        <div class="name">${c.name}</div>
-        ${
-          c.opens.length
-            ? `<div class="meta"><span class="badge">Habilita</span>${c.opens.join(", ")}</div>`
-            : ""
-        }
-      `;
+    grid.appendChild(sec);
+  });
 
-      btn.addEventListener("click", () => toggleCourse(k));
-      section.appendChild(btn);
-    }
+  const pct = Math.round(ok/total*100);
+  progressBar.style.width = pct+"%";
+  progressText.textContent = `${ok}/${total} aprobados (${pct}%)`;
 
-    gridEl.appendChild(section);
-  }
-
-  const pct = Math.round((approved / total) * 100);
-  progressBar.style.width = `${pct}%`;
-  progressText.textContent = `${approved} / ${total} cursos aprobados (${pct}%)`;
+  alertText.textContent = dragged
+    ? `⚠️ Tienes ${dragged} cursos arrastrados de ciclos anteriores`
+    : "";
 }
 
-function toggleCourse(k) {
-  if (done.has(k)) {
-    done.delete(k);
-  } else {
-    done.add(k);
-  }
-  saveDone();
+function toggle(k){
+  done.has(k) ? done.delete(k) : done.add(k);
+  localStorage.setItem(STORAGE, JSON.stringify([...done]));
   render();
 }
 
-/* ===== STORAGE ===== */
-function loadDone() {
-  try {
-    return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY)) || []);
-  } catch {
-    return new Set();
-  }
+/* Ciclo selector */
+const sel = document.getElementById("currentCycle");
+for(let i=1;i<=10;i++){
+  sel.innerHTML += `<option>${i}</option>`;
 }
+sel.onchange = e => {
+  currentCycle = +e.target.value;
+  render();
+};
 
-function saveDone() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify([...done]));
-}
+/* Dark mode */
+document.getElementById("toggleTheme").onclick = ()=>{
+  document.body.classList.toggle("dark");
+  localStorage.setItem(THEME, document.body.classList.contains("dark"));
+};
+if(localStorage.getItem(THEME)==="true") document.body.classList.add("dark");
+
+document.getElementById("reset").onclick = ()=>{
+  if(confirm("¿Reiniciar progreso?")){
+    done.clear();
+    render();
+  }
+};
 
 render();
