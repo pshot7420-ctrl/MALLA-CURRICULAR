@@ -1,18 +1,10 @@
-/* =========================
-   CONFIGURACIÓN
-========================= */
 const STORAGE_KEY = "malla_aprobados";
 let aprobados = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY)) || []);
 
-/* =========================
-   UTILIDAD
-========================= */
 const normalizar = t =>
   t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
 
-/* =========================
-   REQUISITOS (OFICIALES)
-========================= */
+/* ===== REQUISITOS ===== */
 const requisitos = {
   "ADMINISTRACIÓN INDUSTRIAL": ["INTRODUCCIÓN A LA INGENIERÍA INDUSTRIAL"],
   "MATEMÁTICA I": ["MATEMÁTICAS"],
@@ -32,11 +24,9 @@ const requisitos = {
   "INVESTIGACIÓN DE OPERACIONES": ["LENGUAJES DE PROGRAMACIÓN"]
 };
 
-/* =========================
-   MALLA CURRICULAR
-========================= */
+/* ===== MALLA COMPLETA (10 CICLOS) ===== */
 const ciclos = [
-  { nombre: "Ciclo 1", cursos: [
+  { nombre:"Ciclo 1", cursos:[
     "ACTIVIDADES ARTÍSTICAS Y DEPORTIVAS",
     "TALLER DE MÉTODOS DEL ESTUDIO UNIVERSITARIO",
     "TALLER DE ARGUMENTACIÓN ORAL Y ESCRITA",
@@ -45,7 +35,7 @@ const ciclos = [
     "QUÍMICA",
     "INGLÉS I"
   ]},
-  { nombre: "Ciclo 2", cursos: [
+  { nombre:"Ciclo 2", cursos:[
     "TALLER DE INTERPRETACIÓN Y REDACCIÓN DE TEXTOS",
     "FILOSOFÍA Y ÉTICA",
     "PSICOLOGÍA GENERAL",
@@ -55,7 +45,7 @@ const ciclos = [
     "QUÍMICA INDUSTRIAL",
     "INGLÉS II"
   ]},
-  { nombre: "Ciclo 3", cursos: [
+  { nombre:"Ciclo 3", cursos:[
     "RECURSOS NATURALES Y MEDIO AMBIENTE",
     "REALIDAD NACIONAL",
     "ALGORITMOS COMPUTACIONALES",
@@ -64,29 +54,70 @@ const ciclos = [
     "ADMINISTRACIÓN INDUSTRIAL",
     "GLOBALIZACIÓN E INTEGRACIÓN"
   ]},
-  { nombre: "Ciclo 4", cursos: [
+  { nombre:"Ciclo 4", cursos:[
     "FUNDAMENTOS DE ECONOMÍA",
     "MINERÍA DE DATOS",
     "INGENIERÍA DE PROCESOS INDUSTRIALES",
     "DIBUJO EN INGENIERÍA",
     "ESTADÍSTICA Y PROBABILIDADES",
     "INGENIERÍA MECÁNICA ELÉCTRICA"
+  ]},
+  { nombre:"Ciclo 5", cursos:[
+    "INGENIERÍA DE COSTOS Y PRESUPUESTOS",
+    "LENGUAJES DE PROGRAMACIÓN",
+    "INGENIERÍA DE MÉTODOS I",
+    "ESTADÍSTICA INFERENCIAL",
+    "INGENIERÍA DE MATERIALES",
+    "DISEÑO ASISTIDO POR COMPUTADORA"
+  ]},
+  { nombre:"Ciclo 6", cursos:[
+    "INGENIERÍA FINANCIERA",
+    "INVESTIGACIÓN DE OPERACIONES",
+    "INGENIERÍA DE MÉTODOS II",
+    "DISEÑO DE EXPERIMENTOS",
+    "TECNOLOGÍA BÁSICA DE FABRICACIÓN"
+  ]},
+  { nombre:"Ciclo 7", cursos:[
+    "INGENIERÍA ECONÓMICA",
+    "MODELAMIENTO Y SIMULACIÓN DE PROCESOS",
+    "LOGÍSTICA Y CADENA DE SUMINISTRO",
+    "CONTROL ESTADÍSTICO DE LA CALIDAD",
+    "INGENIERÍA DE PLANTA Y MANTENIMIENTO"
+  ]},
+  { nombre:"Ciclo 8", cursos:[
+    "DISEÑO Y EVALUACIÓN DE PROYECTOS DE INVERSIÓN",
+    "PLANEAMIENTO Y CONTROL DE OPERACIONES",
+    "TEORÍA Y METODOLOGÍA DE LA INVESTIGACIÓN",
+    "INGENIERÍA DE PROCESOS EMPRESARIALES",
+    "SISTEMA DE GESTIÓN DE CALIDAD",
+    "MANUFACTURA ASISTIDA POR COMPUTADORA"
+  ]},
+  { nombre:"Ciclo 9", cursos:[
+    "GERENCIA DE PROYECTOS DE INGENIERÍA",
+    "ELECTIVO",
+    "AUTOMATIZACIÓN INDUSTRIAL",
+    "MARKETING E INVESTIGACIÓN DE MERCADOS INDUSTRIALES",
+    "TALLER DE INVESTIGACIÓN I",
+    "SEGURIDAD Y SALUD EN EL TRABAJO"
+  ]},
+  { nombre:"Ciclo 10", cursos:[
+    "ELECTIVO",
+    "ELECTIVO",
+    "GESTIÓN DEL TALENTO HUMANO Y REINGENIERÍA ORGANIZACIONAL",
+    "TALLER DE INVESTIGACIÓN II",
+    "GESTIÓN AMBIENTAL Y RESPONSABILIDAD SOCIAL",
+    "ELECTIVO",
+    "DEONTOLOGÍA PARA INGENIERÍA"
   ]}
-  // (Puedes seguir agregando ciclos 5–10 igual)
 ];
 
-/* =========================
-   FUNCIONES
-========================= */
 function estaDesbloqueado(curso) {
   const reqs = requisitos[curso];
   if (!reqs) return true;
   return reqs.every(r => aprobados.has(normalizar(r)));
 }
 
-/* =========================
-   RENDER
-========================= */
+/* ===== RENDER ===== */
 const grid = document.getElementById("grid");
 const progress = document.getElementById("progress");
 
@@ -98,7 +129,6 @@ function render() {
   ciclos.forEach(ciclo => {
     const box = document.createElement("div");
     box.className = "cycle";
-
     box.innerHTML = `<h3>${ciclo.nombre}</h3>`;
 
     ciclo.cursos.forEach(nombre => {
@@ -110,16 +140,19 @@ function render() {
       btn.className = "course";
       btn.textContent = nombre;
 
-      if (aprobados.has(clave)) {
-        btn.classList.add("done");
-      }
+      if (aprobados.has(clave)) btn.classList.add("done");
 
       if (!estaDesbloqueado(nombre)) {
         btn.classList.add("locked");
         btn.disabled = true;
       }
 
-      btn.onclick = () => toggleCurso(clave);
+      btn.onclick = () => {
+        aprobados.has(clave) ? aprobados.delete(clave) : aprobados.add(clave);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify([...aprobados]));
+        render();
+      };
+
       box.appendChild(btn);
     });
 
@@ -130,13 +163,4 @@ function render() {
   progress.textContent = `${ok} / ${total} cursos aprobados (${pct}%)`;
 }
 
-function toggleCurso(clave) {
-  aprobados.has(clave) ? aprobados.delete(clave) : aprobados.add(clave);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify([...aprobados]));
-  render();
-}
-
-/* =========================
-   INICIO
-========================= */
 render();
