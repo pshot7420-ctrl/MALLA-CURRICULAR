@@ -1,5 +1,8 @@
-const STORAGE = "malla_estado_vfinal";
+const STORAGE = "malla_estado_final";
+const STORAGE_DRAG = "malla_arrastrados";
+
 let estado = JSON.parse(localStorage.getItem(STORAGE)) || {};
+let arrastrados = JSON.parse(localStorage.getItem(STORAGE_DRAG)) || {};
 
 const ciclosBase = [
   ["ACTIVIDADES ARTÍSTICAS Y DEPORTIVAS","TALLER DE MÉTODOS DEL ESTUDIO UNIVERSITARIO","TALLER DE ARGUMENTACIÓN ORAL Y ESCRITA","INTRODUCCIÓN A LA INGENIERÍA INDUSTRIAL","MATEMÁTICAS","QUÍMICA","INGLÉS I"],
@@ -20,7 +23,13 @@ function render() {
 
   let total = 0, approved = 0;
 
-  ciclosBase.forEach((cursos, i) => {
+  const ciclos = ciclosBase.map(c => [...c]);
+
+  Object.entries(arrastrados).forEach(([curso, ciclo]) => {
+    if (ciclos[ciclo]) ciclos[ciclo].push(curso);
+  });
+
+  ciclos.forEach((cursos, i) => {
     const box = document.createElement("div");
     box.className = "cycle";
     box.innerHTML = `<h3>Ciclo ${i + 1}</h3>`;
@@ -30,7 +39,10 @@ function render() {
       if (estado[nombre] === "ok") approved++;
 
       const course = document.createElement("div");
-      course.className = "course" + (estado[nombre] === "ok" ? " approved" : "");
+      course.className = "course";
+
+      if (estado[nombre] === "ok") course.classList.add("approved");
+      if (arrastrados[nombre] === i) course.classList.add("dragged");
 
       course.innerHTML = `
         <div class="course-title">${nombre}</div>
@@ -42,11 +54,13 @@ function render() {
 
       course.querySelector(".btn-ok").onclick = () => {
         estado[nombre] = "ok";
+        delete arrastrados[nombre];
         save();
       };
 
       course.querySelector(".btn-no").onclick = () => {
         estado[nombre] = "no";
+        arrastrados[nombre] = i + 1;
         save();
       };
 
@@ -64,6 +78,7 @@ function render() {
 
 function save() {
   localStorage.setItem(STORAGE, JSON.stringify(estado));
+  localStorage.setItem(STORAGE_DRAG, JSON.stringify(arrastrados));
   render();
 }
 
