@@ -1,112 +1,64 @@
 :root{
-  --bg: #fff5fb;
-  --card: #ffffff;
-  --text: #3b1630;
-  --muted: #7a4f6a;
-
-  --pink-50:#ffe6f3;
-  --pink-100:#ffd0ea;
-  --pink-200:#ffb1dc;
-  --pink-300:#ff8fcd;
-  --pink-400:#ff6dbf;
-  --pink-500:#ff4fb3;
-
-  --locked:#f3d6e6;
-  --available:#ffd0ea;
-  --done:#ff4fb3;
-
-  --border: rgba(255,79,179,.25);
-  --shadow: 0 10px 30px rgba(255,79,179,.12);
-  --shadow2: 0 6px 16px rgba(59,22,48,.06);
-
-  --radius: 18px;
-  --radius2: 14px;
-
-  --gap: 14px;
+  --bg:#fff5fb;
+  --card:#ffffff;
+  --text:#3b1630;
+  --muted:#7a4f6a;
+  --pink:#ff4fb3;
+  --border:rgba(255,79,179,.25);
+  --shadow:0 10px 30px rgba(255,79,179,.12);
+  --radius:18px;
 }
 
-*{ box-sizing:border-box; }
+*{box-sizing:border-box}
+
 body{
   margin:0;
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-  background: var(--bg);
-  color: var(--text);
+  font-family:system-ui, sans-serif;
+  background:var(--bg);
+  color:var(--text);
 }
 
 .topbar{
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  position:sticky;
+  top:0;
+  background:#fff;
+  padding:16px;
   display:flex;
-  align-items:center;
   justify-content:space-between;
-  gap:16px;
-  padding: 18px;
-  background: rgba(255,245,251,.9);
-  border-bottom: 1px solid var(--border);
+  align-items:center;
+  border-bottom:1px solid var(--border);
 }
-
-.brand h1{ margin:0; font-size:20px; }
-.brand p{ margin:2px 0 0; color:var(--muted); font-size:13px; }
 
 .container{
   max-width:1200px;
   margin:20px auto;
-  padding:0 18px;
-}
-
-.progress{
-  width:260px;
-  height:10px;
-  background: rgba(255,79,179,.15);
-  border-radius:999px;
-  overflow:hidden;
-}
-.progress-bar{
-  height:100%;
-  width:0%;
-  background: linear-gradient(90deg,var(--pink-400),var(--pink-500));
-}
-.progress-text{
-  font-size:13px;
-  color:var(--muted);
+  padding:0 16px;
 }
 
 .grid{
   display:grid;
-  grid-template-columns: repeat(5, minmax(210px, 1fr));
-  gap: var(--gap);
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:16px;
 }
 
 .cycle{
-  background: var(--card);
+  background:var(--card);
   border:1px solid var(--border);
-  border-radius: var(--radius);
-  padding:12px;
-  box-shadow: var(--shadow2);
+  border-radius:var(--radius);
+  padding:14px;
+  box-shadow:var(--shadow);
 }
 
 .cycle h2{
-  margin:4px 6px 10px;
+  margin:0 0 10px;
   font-size:16px;
 }
 
 .course{
-  border:1px solid rgba(59,22,48,.1);
-  border-radius: var(--radius2);
+  border:1px dashed var(--border);
+  border-radius:12px;
   padding:10px;
   margin-bottom:10px;
-  background:white;
-  box-shadow:0 6px 14px rgba(59,22,48,.06);
-}
-
-.course.done{
-  background: linear-gradient(180deg, rgba(255,79,179,.18), rgba(255,79,179,.05));
-  border-color: rgba(255,79,179,.6);
-}
-
-.course.available{
-  border-style:dashed;
 }
 
 .course .name{
@@ -115,89 +67,56 @@ body{
 }
 
 .controls{
+  margin-top:8px;
   display:flex;
-  gap:6px;
-  margin-top:6px;
+  gap:8px;
 }
 
 .ctrl{
-  width:22px;
-  height:22px;
+  width:26px;
+  height:26px;
   border-radius:6px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:13px;
-  font-weight:800;
   cursor:pointer;
-  border:1px solid rgba(59,22,48,.2);
-  background:white;
+  font-weight:700;
+  font-size:14px;
 }
 
-.ctrl.ok{ color:#2e7d32; border-color:#2e7d32; }
-.ctrl.no{ color:#b71c1c; border-color:#b71c1c; }
+.ctrl.ok{
+  border:1px solid #3c9d5d;
+  color:#3c9d5d;
+}
+
+.ctrl.no{
+  border:1px solid #b74a4a;
+  color:#b74a4a;
+}
+
+.progress{
+  height:10px;
+  background:#f6cce3;
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:var(--pink);
+}
 
 .footer{
   text-align:center;
-  padding:20px;
   color:var(--muted);
+  padding:20px;
 }
 
-/* ===============================
-   RESPONSIVE REAL PARA CELULAR
-================================ */
-
-/* Tablets */
-@media (max-width: 900px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .course .name {
-    font-size: 12px;
-  }
-}
-
-/* Celulares */
-@media (max-width: 600px) {
-  .grid {
-    grid-template-columns: 1fr; /* 1 ciclo por fila */
-  }
-
-  .topbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-
-  .brand h1 {
-    font-size: 18px;
-  }
-
-  .cycle h2 {
-    font-size: 15px;
-  }
-
-  .course {
-    padding: 8px;
-  }
-
-  .course .name {
-    font-size: 12px;
-  }
-
-  .controls {
-    margin-top: 6px;
-  }
-
-  .ctrl {
-    width: 26px;
-    height: 26px;
-    font-size: 14px;
-  }
-
-  .progress-text {
-    text-align: left;
-    font-size: 12px;
-  }
+.btn{
+  background:transparent;
+  border:1px solid var(--border);
+  padding:8px 14px;
+  border-radius:999px;
+  cursor:pointer;
 }
