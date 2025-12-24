@@ -1,128 +1,144 @@
-:root {
-  --bg: #faf7f9;
+:root{
+  --bg: #fff5fb;
   --card: #ffffff;
-  --border: #e6dbe2;
-  --accent: #b21e5b;
-  --soft: #f3e7ec;
-  --text: #2b1a22;
+  --text: #3b1630;
+  --muted: #7a4f6a;
+
+  --pink-50:#ffe6f3;
+  --pink-100:#ffd0ea;
+  --pink-200:#ffb1dc;
+  --pink-300:#ff8fcd;
+  --pink-400:#ff6dbf;
+  --pink-500:#ff4fb3;
+
+  --locked:#f3d6e6;
+  --available:#ffd0ea;
+  --done:#ff4fb3;
+
+  --border: rgba(255,79,179,.25);
+  --shadow: 0 10px 30px rgba(255,79,179,.12);
+  --shadow2: 0 6px 16px rgba(59,22,48,.06);
+
+  --radius: 18px;
+  --radius2: 14px;
+
+  --gap: 14px;
 }
 
-body {
-  margin: 0;
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
   background: var(--bg);
   color: var(--text);
-  font-family: "Inter", sans-serif;
 }
 
-/* ===== HEADER ===== */
-.header {
-  background: var(--card);
+.topbar{
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding: 18px;
+  background: rgba(255,245,251,.9);
   border-bottom: 1px solid var(--border);
-  padding: 24px 28px;
 }
 
-.header h1 {
-  margin: 0 0 12px;
-  font-family: "Playfair Display", serif;
-  font-size: 26px;
-  font-weight: 600;
+.brand h1{ margin:0; font-size:20px; }
+.brand p{ margin:2px 0 0; color:var(--muted); font-size:13px; }
+
+.container{
+  max-width:1200px;
+  margin:20px auto;
+  padding:0 18px;
 }
 
-/* ===== PROGRESO ===== */
-.progress-container {
-  width: 100%;
-  height: 10px;
-  background: #e6dbe2;
-  border-radius: 6px;
-  overflow: hidden;
+.progress{
+  width:260px;
+  height:10px;
+  background: rgba(255,79,179,.15);
+  border-radius:999px;
+  overflow:hidden;
+}
+.progress-bar{
+  height:100%;
+  width:0%;
+  background: linear-gradient(90deg,var(--pink-400),var(--pink-500));
+}
+.progress-text{
+  font-size:13px;
+  color:var(--muted);
 }
 
-.progress-bar {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, #b21e5b, #d44c82);
-  transition: width 0.4s ease;
+.grid{
+  display:grid;
+  grid-template-columns: repeat(5, minmax(210px, 1fr));
+  gap: var(--gap);
 }
 
-.progress-text {
-  margin-top: 6px;
-  font-size: 13px;
-  color: #555;
-}
-
-/* ===== GRID ===== */
-main {
-  max-width: 1200px;
-  margin: auto;
-  padding: 28px;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
-
-/* ===== CICLO ===== */
-.cycle {
+.cycle{
   background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 14px;
+  border:1px solid var(--border);
+  border-radius: var(--radius);
+  padding:12px;
+  box-shadow: var(--shadow2);
 }
 
-.cycle h3 {
-  margin: 0 0 12px;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--accent);
+.cycle h2{
+  margin:4px 6px 10px;
+  font-size:16px;
 }
 
-/* ===== CURSOS ===== */
-.course {
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 6px 8px;
-  margin-bottom: 6px;
-  background: var(--soft);
-  font-size: 11.5px;
+.course{
+  border:1px solid rgba(59,22,48,.1);
+  border-radius: var(--radius2);
+  padding:10px;
+  margin-bottom:10px;
+  background:white;
+  box-shadow:0 6px 14px rgba(59,22,48,.06);
 }
 
-.course.approved {
-  background: var(--accent);
-  color: white;
-  border-color: var(--accent);
+.course.done{
+  background: linear-gradient(180deg, rgba(255,79,179,.18), rgba(255,79,179,.05));
+  border-color: rgba(255,79,179,.6);
 }
 
-.course.dragged {
-  border: 1px dashed var(--accent);
+.course.available{
+  border-style:dashed;
 }
 
-.course-title {
-  margin-bottom: 4px;
-  line-height: 1.2;
+.course .name{
+  font-weight:700;
+  font-size:13px;
 }
 
-/* ===== BOTONES ===== */
-.course-actions {
-  display: flex;
-  gap: 6px;
+.controls{
+  display:flex;
+  gap:6px;
+  margin-top:6px;
 }
 
-.course-actions button {
-  flex: 1;
-  border: none;
-  border-radius: 5px;
-  font-size: 10.5px;
-  padding: 4px;
-  cursor: pointer;
+.ctrl{
+  width:22px;
+  height:22px;
+  border-radius:6px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:13px;
+  font-weight:800;
+  cursor:pointer;
+  border:1px solid rgba(59,22,48,.2);
+  background:white;
 }
 
-.btn-ok {
-  background: #4caf50;
-  color: white;
-}
+.ctrl.ok{ color:#2e7d32; border-color:#2e7d32; }
+.ctrl.no{ color:#b71c1c; border-color:#b71c1c; }
 
-.btn-no {
-  background: #ccc;
+.footer{
+  text-align:center;
+  padding:20px;
+  color:var(--muted);
 }
