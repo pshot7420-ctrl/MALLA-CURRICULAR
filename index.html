@@ -1,36 +1,38 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Malla Curricular – Ingeniería Industrial</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-<header class="topbar">
-  <div class="brand">
-    <h1>Malla Curricular – Ingeniería Industrial</h1>
-    <p>Seguimiento académico interactivo</p>
-  </div>
-
-  <div class="actions">
-    <div class="progress">
-      <div class="progress-bar" id="progressBar"></div>
+  <header class="topbar">
+    <div class="brand">
+      <h1>Malla Curricular – Ingeniería Industrial</h1>
+      <p>Seguimiento académico interactivo</p>
     </div>
-    <div class="progress-text" id="progressText"></div>
-  </div>
-</header>
+    <div class="actions">
+      <button class="btn btn-ghost" id="resetBtn">Reiniciar</button>
+    </div>
+  </header>
 
-<main class="container">
-  <section id="grid" class="grid"></section>
-</main>
+  <main class="container">
+    <div class="card legend">
+      <div class="progress">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div class="progress-text" id="progressText">0 / 0 cursos aprobados (0%)</div>
+    </div>
 
-<footer class="footer">
-  Proyecto académico – Ingeniería Industrial
-</footer>
+    <div id="grid" class="grid"></div>
+  </main>
 
-<script src="script.js"></script>
+  <footer class="footer">
+    Hecho con 💗 para organizar tu avance académico
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
