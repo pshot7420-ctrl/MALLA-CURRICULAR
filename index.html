@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Malla Curricular – Ingeniería Industrial</title>
-  <link rel="stylesheet" href="styles.css" />
+  <title>Malla Curricular</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<!-- PANTALLA DE BIENVENIDA -->
+<!-- BIENVENIDA -->
 <div id="welcomeScreen" class="welcome">
   <div class="welcome-card">
     <h1>Bienvenida ✨</h1>
     <p>Ingresa tu nombre para empezar</p>
-    <input type="text" id="nameInput" placeholder="Nombre y apellido" />
+    <input id="nameInput" placeholder="Nombre y apellido">
     <button class="btn" onclick="ingresar()">Ingresar</button>
   </div>
 </div>
@@ -21,27 +21,22 @@
 <!-- APP -->
 <div id="app" style="display:none;">
   <header class="topbar">
-    <div class="brand">
-      <h1>Malla Curricular – Ingeniería Industrial</h1>
-      <p id="saludo"></p>
-    </div>
+    <h1>Malla Curricular</h1>
+    <span id="saludo"></span>
     <button class="btn btn-ghost" onclick="reiniciar()">Reiniciar</button>
   </header>
 
   <main class="container">
-    <div class="card legend">
-      <div class="progress">
-        <div class="progress-bar" id="progressBar"></div>
-      </div>
-      <div class="progress-text" id="progressText"></div>
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
     </div>
+    <p id="progressText"></p>
 
-    <section id="grid" class="grid"></section>
+    <section id="grid"></section>
   </main>
-
-  <footer class="footer">Hecho con 💗</footer>
 </div>
 
+<!-- ⚠️ IMPORTANTE: script AL FINAL -->
 <script src="script.js"></script>
 </body>
 </html>
