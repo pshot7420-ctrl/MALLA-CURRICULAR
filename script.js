@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const STORE_STATE = "estado_cursos_v9";
-  const STORE_SHIFT = "shift_cursos_v9";
+  const STORE_STATE = "estado_cursos_v10";
+  const STORE_SHIFT = "shift_cursos_v10";
 
   const grid = document.getElementById("grid");
   const resetBtn = document.getElementById("resetBtn");
@@ -10,65 +10,50 @@ document.addEventListener("DOMContentLoaded", () => {
   let estado = JSON.parse(localStorage.getItem(STORE_STATE) || "{}");
   let shift = JSON.parse(localStorage.getItem(STORE_SHIFT) || "{}");
 
+  /* =========================
+     MALLA BASE (CORREGIDA)
+  ========================= */
   const cursosBase = [
+    // Ciclo 1
     ["ACTIVIDADES ARTÍSTICAS Y DEPORTIVAS","TALLER DE MÉTODOS DEL ESTUDIO UNIVERSITARIO","TALLER DE ARGUMENTACIÓN ORAL Y ESCRITA","INTRODUCCIÓN A LA INGENIERÍA INDUSTRIAL","MATEMÁTICAS","QUÍMICA","INGLÉS I"],
+
+    // Ciclo 2
     ["TALLER DE INTERPRETACIÓN Y REDACCIÓN DE TEXTOS","FILOSOFÍA Y ÉTICA","PSICOLOGÍA GENERAL","FORMACIÓN HISTÓRICA DEL PERÚ","MATEMÁTICA I","FÍSICA I","QUÍMICA INDUSTRIAL","INGLÉS II"],
+
+    // Ciclo 3
     ["RECURSOS NATURALES Y MEDIO AMBIENTE","REALIDAD NACIONAL","ALGORITMOS COMPUTACIONALES","MATEMÁTICA II","FÍSICA II","ADMINISTRACIÓN INDUSTRIAL","GLOBALIZACIÓN E INTEGRACIÓN"],
+
+    // Ciclo 4
     ["FUNDAMENTOS DE ECONOMÍA","MINERÍA DE DATOS","INGENIERÍA DE PROCESOS INDUSTRIALES","DIBUJO EN INGENIERÍA","ESTADÍSTICA Y PROBABILIDADES","INGENIERÍA MECÁNICA ELÉCTRICA"],
+
+    // Ciclo 5
     ["INGENIERÍA DE COSTOS Y PRESUPUESTOS","LENGUAJES DE PROGRAMACIÓN","INGENIERÍA DE MÉTODOS I","ESTADÍSTICA INFERENCIAL","INGENIERÍA DE MATERIALES","DISEÑO ASISTIDO POR COMPUTADORA"],
+
+    // Ciclo 6
     ["INGENIERÍA FINANCIERA","INVESTIGACIÓN DE OPERACIONES","INGENIERÍA DE MÉTODOS II","DISEÑO DE EXPERIMENTOS","TECNOLOGÍA BÁSICA DE FABRICACIÓN"],
+
+    // Ciclo 7
     ["INGENIERÍA ECONÓMICA","MODELAMIENTO Y SIMULACIÓN DE PROCESOS","LOGÍSTICA Y CADENA DE SUMINISTRO","CONTROL ESTADÍSTICO DE LA CALIDAD","INGENIERÍA DE PLANTA Y MANTENIMIENTO"],
+
+    // Ciclo 8
     ["DISEÑO Y EVALUACIÓN DE PROYECTOS DE INVERSIÓN","PLANEAMIENTO Y CONTROL DE OPERACIONES","TEORÍA Y METODOLOGÍA DE LA INVESTIGACIÓN","INGENIERÍA DE PROCESOS EMPRESARIALES","SISTEMA DE GESTIÓN DE CALIDAD","MANUFACTURA ASISTIDA POR COMPUTADORA"],
-    ["GERENCIA DE PROYECTOS DE INGENIERÍA","AUTOMATIZACIÓN INDUSTRIAL","MARKETING E INVESTIGACIÓN DE MERCADOS INDUSTRIALES","TALLER DE INVESTIGACIÓN I","SEGURIDAD Y SALUD EN EL TRABAJO"],
+
+    // Ciclo 9  ✅ + ELECTIVO
+    ["GERENCIA DE PROYECTOS DE INGENIERÍA","AUTOMATIZACIÓN INDUSTRIAL","MARKETING E INVESTIGACIÓN DE MERCADOS INDUSTRIALES","TALLER DE INVESTIGACIÓN I","SEGURIDAD Y SALUD EN EL TRABAJO","ELECTIVO"],
+
+    // Ciclo 10 ✅ + 2 ELECTIVOS
     ["ELECTIVO","ELECTIVO","GESTIÓN DEL TALENTO HUMANO Y REINGENIERÍA ORGANIZACIONAL","TALLER DE INVESTIGACIÓN II","GESTIÓN AMBIENTAL Y RESPONSABILIDAD SOCIAL","DEONTOLOGÍA PARA INGENIERÍA"]
   ];
 
-  // requisito -> dependientes (cadena)
+  /* =========================
+     DEPENDENCIAS
+  ========================= */
   const dependencias = {
     "MATEMÁTICAS":["MATEMÁTICA I","FÍSICA I"],
-    "QUÍMICA":["QUÍMICA INDUSTRIAL"],
-    "INGLÉS I":["INGLÉS II"],
-
     "MATEMÁTICA I":["MATEMÁTICA II"],
-    "FÍSICA I":["FÍSICA II"],
-    "INTRODUCCIÓN A LA INGENIERÍA INDUSTRIAL":["ADMINISTRACIÓN INDUSTRIAL"],
-
     "MATEMÁTICA II":["FUNDAMENTOS DE ECONOMÍA","ESTADÍSTICA Y PROBABILIDADES"],
-    "ALGORITMOS COMPUTACIONALES":["MINERÍA DE DATOS"],
-    "ADMINISTRACIÓN INDUSTRIAL":["INGENIERÍA DE PROCESOS INDUSTRIALES","INGENIERÍA DE MÉTODOS I"],
-
     "FUNDAMENTOS DE ECONOMÍA":["INGENIERÍA DE COSTOS Y PRESUPUESTOS"],
-    "MINERÍA DE DATOS":["LENGUAJES DE PROGRAMACIÓN"],
-    "ESTADÍSTICA Y PROBABILIDADES":["ESTADÍSTICA INFERENCIAL"],
-    "INGENIERÍA MECÁNICA ELÉCTRICA":["INGENIERÍA DE MATERIALES"],
-    "DIBUJO EN INGENIERÍA":["DISEÑO ASISTIDO POR COMPUTADORA"],
-
-    "INGENIERÍA DE COSTOS Y PRESUPUESTOS":["INGENIERÍA FINANCIERA"],
-    "LENGUAJES DE PROGRAMACIÓN":["INVESTIGACIÓN DE OPERACIONES"],
-    "INGENIERÍA DE MÉTODOS I":["INGENIERÍA DE MÉTODOS II"],
-    "ESTADÍSTICA INFERENCIAL":["DISEÑO DE EXPERIMENTOS"],
-    "DISEÑO ASISTIDO POR COMPUTADORA":["TECNOLOGÍA BÁSICA DE FABRICACIÓN"],
-
-    "INGENIERÍA FINANCIERA":["INGENIERÍA ECONÓMICA"],
-    "INVESTIGACIÓN DE OPERACIONES":["MODELAMIENTO Y SIMULACIÓN DE PROCESOS"],
-    "INGENIERÍA DE MÉTODOS II":["LOGÍSTICA Y CADENA DE SUMINISTRO"],
-    "DISEÑO DE EXPERIMENTOS":["CONTROL ESTADÍSTICO DE LA CALIDAD"],
-    "TECNOLOGÍA BÁSICA DE FABRICACIÓN":["INGENIERÍA DE PLANTA Y MANTENIMIENTO"],
-
-    "INGENIERÍA ECONÓMICA":["DISEÑO Y EVALUACIÓN DE PROYECTOS DE INVERSIÓN"],
-    "LOGÍSTICA Y CADENA DE SUMINISTRO":["PLANEAMIENTO Y CONTROL DE OPERACIONES"],
-    "CONTROL ESTADÍSTICO DE LA CALIDAD":["SISTEMA DE GESTIÓN DE CALIDAD","TEORÍA Y METODOLOGÍA DE LA INVESTIGACIÓN"],
-    "MODELAMIENTO Y SIMULACIÓN DE PROCESOS":["INGENIERÍA DE PROCESOS EMPRESARIALES"],
-    "INGENIERÍA DE PLANTA Y MANTENIMIENTO":["MANUFACTURA ASISTIDA POR COMPUTADORA"],
-
-    "DISEÑO Y EVALUACIÓN DE PROYECTOS DE INVERSIÓN":["GERENCIA DE PROYECTOS DE INGENIERÍA","AUTOMATIZACIÓN INDUSTRIAL"],
-    "PLANEAMIENTO Y CONTROL DE OPERACIONES":["MARKETING E INVESTIGACIÓN DE MERCADOS INDUSTRIALES"],
-    "TEORÍA Y METODOLOGÍA DE LA INVESTIGACIÓN":["TALLER DE INVESTIGACIÓN I"],
-    "SISTEMA DE GESTIÓN DE CALIDAD":["SEGURIDAD Y SALUD EN EL TRABAJO"],
-
-    "MARKETING E INVESTIGACIÓN DE MERCADOS INDUSTRIALES":["GESTIÓN DEL TALENTO HUMANO Y REINGENIERÍA ORGANIZACIONAL"],
-    "TALLER DE INVESTIGACIÓN I":["TALLER DE INVESTIGACIÓN II"],
-    "SEGURIDAD Y SALUD EN EL TRABAJO":["GESTIÓN AMBIENTAL Y RESPONSABILIDAD SOCIAL"]
+    "ESTADÍSTICA Y PROBABILIDADES":["ESTADÍSTICA INFERENCIAL"]
   };
 
   const baseCycle = {};
@@ -119,23 +104,19 @@ document.addEventListener("DOMContentLoaded", () => {
         okBtn.type = "button";
         okBtn.className = "ctrl ok";
         okBtn.textContent = "✓";
-        okBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
+        okBtn.onclick = () => {
           estado[curso] = "ok";
           guardar();
-        });
+        };
 
         const noBtn = document.createElement("button");
         noBtn.type = "button";
         noBtn.className = "ctrl no";
         noBtn.textContent = "✕";
-        noBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
+        noBtn.onclick = () => {
           empujar(curso);
           guardar();
-        });
+        };
 
         controls.append(okBtn, noBtn);
         card.append(name, controls);
@@ -145,22 +126,20 @@ document.addEventListener("DOMContentLoaded", () => {
       grid.appendChild(box);
     }
 
-    // progreso
-    let total = Object.keys(baseCycle).length;
-    let ok = Object.values(estado).filter(v => v === "ok").length;
-    const pct = total ? Math.round((ok / total) * 100) : 0;
+    const total = Object.keys(baseCycle).length;
+    const ok = Object.values(estado).filter(v => v === "ok").length;
+    const pct = Math.round((ok / total) * 100);
     progressBar.style.width = pct + "%";
     progressText.textContent = `${ok} / ${total} cursos aprobados (${pct}%)`;
   }
 
-  resetBtn.addEventListener("click", () => {
-    if (!confirm("¿Reiniciar la malla? Se borrará todo el progreso.")) return;
+  resetBtn.onclick = () => {
+    if (!confirm("¿Reiniciar la malla?")) return;
     estado = {};
     shift = {};
-    localStorage.removeItem(STORE_STATE);
-    localStorage.removeItem(STORE_SHIFT);
+    localStorage.clear();
     render();
-  });
+  };
 
   render();
 });
