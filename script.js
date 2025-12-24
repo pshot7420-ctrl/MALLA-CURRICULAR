@@ -1,12 +1,12 @@
-const STORE_STATE = "estado_cursos";
-const STORE_MOVED = "cursos_movidos";
+const STORE_STATE = "estado_cursos_v6";
+const STORE_SHIFT = "shift_cursos_v6";
 
 let estado = JSON.parse(localStorage.getItem(STORE_STATE)) || {};
-let movidos = JSON.parse(localStorage.getItem(STORE_MOVED)) || {};
+let shift = JSON.parse(localStorage.getItem(STORE_SHIFT)) || {};
 
-/* =====================
-   MALLA BASE
-===================== */
+/* =========================
+   MALLA BASE (CICLO ORIGINAL)
+========================= */
 const cursosBase = [
   ["ACTIVIDADES ARTÍSTICAS Y DEPORTIVAS","TALLER DE MÉTODOS DEL ESTUDIO UNIVERSITARIO","TALLER DE ARGUMENTACIÓN ORAL Y ESCRITA","INTRODUCCIÓN A LA INGENIERÍA INDUSTRIAL","MATEMÁTICAS","QUÍMICA","INGLÉS I"],
   ["TALLER DE INTERPRETACIÓN Y REDACCIÓN DE TEXTOS","FILOSOFÍA Y ÉTICA","PSICOLOGÍA GENERAL","FORMACIÓN HISTÓRICA DEL PERÚ","MATEMÁTICA I","FÍSICA I","QUÍMICA INDUSTRIAL","INGLÉS II"],
@@ -20,9 +20,9 @@ const cursosBase = [
   ["ELECTIVO","ELECTIVO","GESTIÓN DEL TALENTO HUMANO Y REINGENIERÍA ORGANIZACIONAL","TALLER DE INVESTIGACIÓN II","GESTIÓN AMBIENTAL Y RESPONSABILIDAD SOCIAL","DEONTOLOGÍA PARA INGENIERÍA"]
 ];
 
-/* =====================
-   DEPENDENCIAS
-===================== */
+/* =========================
+   DEPENDENCIAS (REQUISITO → DEPENDIENTES)
+========================= */
 const dependencias = {
   "MATEMÁTICAS":["MATEMÁTICA I","FÍSICA I"],
   "QUÍMICA":["QUÍMICA INDUSTRIAL"],
@@ -34,94 +34,89 @@ const dependencias = {
   "ALGORITMOS COMPUTACIONALES":["MINERÍA DE DATOS"],
   "ADMINISTRACIÓN INDUSTRIAL":["INGENIERÍA DE PROCESOS INDUSTRIALES","INGENIERÍA DE MÉTODOS I"],
   "FUNDAMENTOS DE ECONOMÍA":["INGENIERÍA DE COSTOS Y PRESUPUESTOS"],
-  "MINERÍA DE DATOS":["LENGUAJES DE PROGRAMACIÓN"],
   "ESTADÍSTICA Y PROBABILIDADES":["ESTADÍSTICA INFERENCIAL"],
-  "INGENIERÍA MECÁNICA ELÉCTRICA":["INGENIERÍA DE MATERIALES"],
-  "DIBUJO EN INGENIERÍA":["DISEÑO ASISTIDO POR COMPUTADORA"]
+  "INGENIERÍA DE COSTOS Y PRESUPUESTOS":["INGENIERÍA FINANCIERA"],
+  "ESTADÍSTICA INFERENCIAL":["DISEÑO DE EXPERIMENTOS"]
 };
 
-/* =====================
-   UTILIDADES
-===================== */
-function moverEnCadena(curso, ciclo){
-  movidos[curso] = ciclo;
-  (dependencias[curso] || []).forEach(dep => moverEnCadena(dep, ciclo + 1));
+/* =========================
+   MAPA CURSO → CICLO BASE
+========================= */
+const baseCycle = {};
+cursosBase.forEach((lista, i) =>
+  lista.forEach(curso => baseCycle[curso] = i)
+);
+
+/* =========================
+   EMPUJE EN CADENA (SOLO ✕)
+========================= */
+function empujar(curso) {
+  shift[curso] = (shift[curso] || 0) + 1;
+  (dependencias[curso] || []).forEach(dep => empujar(dep));
 }
 
+/* =========================
+   RENDER
+========================= */
 function render(){
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
-  const ciclos = Array.from({length:10}, () => []);
-  let total = 0, aprobados = 0;
+  const ciclos = [];
 
-  cursosBase.forEach((lista, cicloBase) => {
-    lista.forEach(curso => {
-      total++;
+  Object.keys(baseCycle).forEach(curso => {
+    const base = baseCycle[curso];
+    const s = shift[curso] || 0;
+    const finalCycle = base + s;
 
-      if(estado[curso] === "ok"){
-        aprobados++;
-        return;
-      }
-
-      const cicloFinal = movidos[curso] ?? cicloBase;
-      ciclos[cicloFinal].push(curso);
-    });
+    if (!ciclos[finalCycle]) ciclos[finalCycle] = [];
+    ciclos[finalCycle].push(curso);
   });
 
-  ciclos.forEach((lista,i)=>{
+  const maxCycle = Math.max(ciclos.length, 10);
+
+  for (let i = 0; i < maxCycle; i++) {
     const box = document.createElement("div");
     box.className = "cycle";
     box.innerHTML = `<h2>Ciclo ${i+1}</h2>`;
 
-    lista.forEach(nombre=>{
+    (ciclos[i] || []).forEach(curso => {
       const c = document.createElement("div");
       c.className = "course";
+      if (estado[curso] === "ok") c.classList.add("done");
+
       c.innerHTML = `
-        <div class="name">${nombre}</div>
+        <div class="name">${curso}</div>
         <div class="controls">
           <div class="ctrl ok">✓</div>
           <div class="ctrl no">✕</div>
         </div>
       `;
 
-      c.querySelector(".ok").onclick = ()=>{
-        estado[nombre] = "ok";
-        delete movidos[nombre];
-        save();
+      c.querySelector(".ok").onclick = () => {
+        estado[curso] = "ok";
+        renderSave();
       };
 
-      c.querySelector(".no").onclick = ()=>{
-        estado[nombre] = "no";
-        moverEnCadena(nombre, i+1);
-        save();
+      c.querySelector(".no").onclick = () => {
+        empujar(curso);
+        renderSave();
       };
 
       box.appendChild(c);
     });
 
     grid.appendChild(box);
-  });
-
-  const pct = Math.round((aprobados / total) * 100);
-  document.getElementById("progressBar").style.width = pct + "%";
-  document.getElementById("progressText").textContent =
-    `${aprobados} / ${total} cursos aprobados (${pct}%)`;
+  }
 }
 
-function save(){
+/* =========================
+   GUARDAR
+========================= */
+function renderSave(){
   localStorage.setItem(STORE_STATE, JSON.stringify(estado));
-  localStorage.setItem(STORE_MOVED, JSON.stringify(movidos));
+  localStorage.setItem(STORE_SHIFT, JSON.stringify(shift));
   render();
 }
-
-document.getElementById("resetBtn").onclick = ()=>{
-  if(confirm("¿Reiniciar la malla?")){
-    estado = {};
-    movidos = {};
-    localStorage.clear();
-    render();
-  }
-};
 
 render();
