@@ -1,11 +1,11 @@
-const STORE_STATE = "estado_cursos_v6";
-const STORE_SHIFT = "shift_cursos_v6";
+const STORE_STATE = "estado_cursos_v7";
+const STORE_SHIFT = "shift_cursos_v7";
 
 let estado = JSON.parse(localStorage.getItem(STORE_STATE)) || {};
 let shift = JSON.parse(localStorage.getItem(STORE_SHIFT)) || {};
 
 /* =========================
-   MALLA BASE (CICLO ORIGINAL)
+   MALLA BASE
 ========================= */
 const cursosBase = [
   ["ACTIVIDADES ARTÍSTICAS Y DEPORTIVAS","TALLER DE MÉTODOS DEL ESTUDIO UNIVERSITARIO","TALLER DE ARGUMENTACIÓN ORAL Y ESCRITA","INTRODUCCIÓN A LA INGENIERÍA INDUSTRIAL","MATEMÁTICAS","QUÍMICA","INGLÉS I"],
@@ -21,7 +21,7 @@ const cursosBase = [
 ];
 
 /* =========================
-   DEPENDENCIAS (REQUISITO → DEPENDIENTES)
+   DEPENDENCIAS
 ========================= */
 const dependencias = {
   "MATEMÁTICAS":["MATEMÁTICA I","FÍSICA I"],
@@ -40,7 +40,7 @@ const dependencias = {
 };
 
 /* =========================
-   MAPA CURSO → CICLO BASE
+   MAPA BASE
 ========================= */
 const baseCycle = {};
 cursosBase.forEach((lista, i) =>
@@ -48,9 +48,9 @@ cursosBase.forEach((lista, i) =>
 );
 
 /* =========================
-   EMPUJE EN CADENA (SOLO ✕)
+   EMPUJE EN CADENA (✕)
 ========================= */
-function empujar(curso) {
+function empujar(curso){
   shift[curso] = (shift[curso] || 0) + 1;
   (dependencias[curso] || []).forEach(dep => empujar(dep));
 }
@@ -66,24 +66,25 @@ function render(){
 
   Object.keys(baseCycle).forEach(curso => {
     const base = baseCycle[curso];
-    const s = shift[curso] || 0;
-    const finalCycle = base + s;
+    const desplazamiento = shift[curso] || 0;
+    const cicloFinal = base + desplazamiento;
 
-    if (!ciclos[finalCycle]) ciclos[finalCycle] = [];
-    ciclos[finalCycle].push(curso);
+    if (!ciclos[cicloFinal]) ciclos[cicloFinal] = [];
+    ciclos[cicloFinal].push(curso);
   });
 
   const maxCycle = Math.max(ciclos.length, 10);
 
-  for (let i = 0; i < maxCycle; i++) {
+  for (let i = 0; i < maxCycle; i++){
     const box = document.createElement("div");
     box.className = "cycle";
     box.innerHTML = `<h2>Ciclo ${i+1}</h2>`;
 
     (ciclos[i] || []).forEach(curso => {
       const c = document.createElement("div");
-      c.className = "course";
-      if (estado[curso] === "ok") c.classList.add("done");
+
+      // 🔑 ESTA ES LA LÍNEA CLAVE
+      c.className = "course" + (estado[curso] === "ok" ? " done" : "");
 
       c.innerHTML = `
         <div class="name">${curso}</div>
@@ -95,12 +96,12 @@ function render(){
 
       c.querySelector(".ok").onclick = () => {
         estado[curso] = "ok";
-        renderSave();
+        guardar();
       };
 
       c.querySelector(".no").onclick = () => {
         empujar(curso);
-        renderSave();
+        guardar();
       };
 
       box.appendChild(c);
@@ -111,9 +112,9 @@ function render(){
 }
 
 /* =========================
-   GUARDAR
+   GUARDAR Y REDIBUJAR
 ========================= */
-function renderSave(){
+function guardar(){
   localStorage.setItem(STORE_STATE, JSON.stringify(estado));
   localStorage.setItem(STORE_SHIFT, JSON.stringify(shift));
   render();
