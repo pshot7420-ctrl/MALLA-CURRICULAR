@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Malla Curricular</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Malla Curricular – Ingeniería Industrial</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
@@ -13,30 +13,49 @@
   <div class="welcome-card">
     <h1>Bienvenida ✨</h1>
     <p>Ingresa tu nombre para empezar</p>
-    <input id="nameInput" placeholder="Nombre y apellido">
-    <button class="btn" onclick="ingresar()">Ingresar</button>
+
+    <input type="text" id="nameInput" placeholder="Nombre y apellido" />
+    <button class="btn" id="startBtn" type="button">Ingresar</button>
+
+    <p class="hint">Tu avance se guarda automáticamente en este dispositivo.</p>
   </div>
 </div>
 
 <!-- APP -->
-<div id="app" style="display:none;">
+<div id="app" class="app" style="display:none;">
   <header class="topbar">
-    <h1>Malla Curricular</h1>
-    <span id="saludo"></span>
-    <button class="btn btn-ghost" onclick="reiniciar()">Reiniciar</button>
+    <div class="brand">
+      <h1>Malla Curricular – Ingeniería Industrial</h1>
+      <p>Seguimiento académico interactivo</p>
+    </div>
+
+    <div class="right">
+      <div class="hello" id="saludo"></div>
+      <button class="btn btn-ghost" id="resetBtn" type="button">Reiniciar</button>
+    </div>
   </header>
 
   <main class="container">
-    <div class="progress">
-      <div class="progress-bar" id="progressBar"></div>
-    </div>
-    <p id="progressText"></p>
+    <section class="card legend">
+      <div class="progress-wrap">
+        <div class="progress">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-text" id="progressText"></div>
+      </div>
 
-    <section id="grid"></section>
+      <div class="legend-mini">
+        <span class="pill"><span class="dot done"></span> Aprobado</span>
+        <span class="pill"><span class="dot pending"></span> Pendiente/Reprogramado</span>
+      </div>
+    </section>
+
+    <section id="grid" class="grid"></section>
+
+    <footer class="footer">Hecho con 💗</footer>
   </main>
 </div>
 
-<!-- ⚠️ IMPORTANTE: script AL FINAL -->
 <script src="script.js"></script>
 </body>
 </html>
