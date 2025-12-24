@@ -8,10 +8,22 @@
 </head>
 <body>
 
+<!-- PANTALLA DE INICIO -->
+<div id="welcomeScreen" class="welcome">
+  <div class="welcome-card">
+    <h1>Bienvenida ✨</h1>
+    <p>Ingresa tu nombre para empezar</p>
+    <input type="text" id="nameInput" placeholder="Nombre y apellido" />
+    <button id="startBtn" class="btn">Entrar a mi malla</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none;">
   <header class="topbar">
     <div class="brand">
       <h1>Malla Curricular – Ingeniería Industrial</h1>
-      <p>Marca ✓ (aprobado) o ✕ (jalado / no llevado)</p>
+      <p id="saludo"></p>
     </div>
 
     <div class="actions">
@@ -30,8 +42,11 @@
     <section id="grid" class="grid"></section>
   </main>
 
-  <footer class="footer">Hecho con 💗</footer>
+  <footer class="footer">
+    Hecho con 💗
+  </footer>
+</div>
 
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
