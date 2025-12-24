@@ -4,26 +4,31 @@
   <meta charset="UTF-8">
   <title>Malla Curricular – Ingeniería Industrial</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Tipografías -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header class="header">
-  <h1>Malla Curricular – Ingeniería Industrial</h1>
-
-  <div class="progress-container">
-    <div class="progress-bar" id="progressBar"></div>
+<header class="topbar">
+  <div class="brand">
+    <h1>Malla Curricular – Ingeniería Industrial</h1>
+    <p>Seguimiento académico interactivo</p>
   </div>
-  <p id="progressText" class="progress-text"></p>
+
+  <div class="actions">
+    <div class="progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="progress-text" id="progressText"></div>
+  </div>
 </header>
 
-<main>
+<main class="container">
   <section id="grid" class="grid"></section>
 </main>
+
+<footer class="footer">
+  Proyecto académico – Ingeniería Industrial
+</footer>
 
 <script src="script.js"></script>
 </body>
