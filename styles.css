@@ -142,3 +142,62 @@ body{
   padding:20px;
   color:var(--muted);
 }
+
+/* ===============================
+   RESPONSIVE REAL PARA CELULAR
+================================ */
+
+/* Tablets */
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .course .name {
+    font-size: 12px;
+  }
+}
+
+/* Celulares */
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr; /* 1 ciclo por fila */
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .brand h1 {
+    font-size: 18px;
+  }
+
+  .cycle h2 {
+    font-size: 15px;
+  }
+
+  .course {
+    padding: 8px;
+  }
+
+  .course .name {
+    font-size: 12px;
+  }
+
+  .controls {
+    margin-top: 6px;
+  }
+
+  .ctrl {
+    width: 26px;
+    height: 26px;
+    font-size: 14px;
+  }
+
+  .progress-text {
+    text-align: left;
+    font-size: 12px;
+  }
+}
