@@ -14,20 +14,18 @@
     <h1>Bienvenida ✨</h1>
     <p>Ingresa tu nombre para empezar</p>
     <input type="text" id="nameInput" placeholder="Nombre y apellido" />
-    <button id="startBtn" class="btn">Ingresar</button>
+    <button class="btn" onclick="ingresar()">Ingresar</button>
   </div>
 </div>
 
-<!-- APLICACIÓN -->
+<!-- APP -->
 <div id="app" style="display:none;">
   <header class="topbar">
     <div class="brand">
       <h1>Malla Curricular – Ingeniería Industrial</h1>
       <p id="saludo"></p>
     </div>
-    <div class="actions">
-      <button id="resetBtn" class="btn btn-ghost" type="button">Reiniciar</button>
-    </div>
+    <button class="btn btn-ghost" onclick="reiniciar()">Reiniciar</button>
   </header>
 
   <main class="container">
