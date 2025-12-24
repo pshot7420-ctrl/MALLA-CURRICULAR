@@ -8,26 +8,25 @@
 </head>
 <body>
 
-<!-- PANTALLA DE INICIO -->
+<!-- PANTALLA DE BIENVENIDA -->
 <div id="welcomeScreen" class="welcome">
   <div class="welcome-card">
     <h1>Bienvenida ✨</h1>
     <p>Ingresa tu nombre para empezar</p>
     <input type="text" id="nameInput" placeholder="Nombre y apellido" />
-    <button id="startBtn" class="btn">Entrar a mi malla</button>
+    <button id="startBtn" class="btn">Ingresar</button>
   </div>
 </div>
 
-<!-- APP -->
+<!-- APLICACIÓN -->
 <div id="app" style="display:none;">
   <header class="topbar">
     <div class="brand">
       <h1>Malla Curricular – Ingeniería Industrial</h1>
       <p id="saludo"></p>
     </div>
-
     <div class="actions">
-      <button class="btn btn-ghost" id="resetBtn" type="button">Reiniciar</button>
+      <button id="resetBtn" class="btn btn-ghost" type="button">Reiniciar</button>
     </div>
   </header>
 
@@ -36,15 +35,13 @@
       <div class="progress">
         <div class="progress-bar" id="progressBar"></div>
       </div>
-      <div class="progress-text" id="progressText">0 / 0 cursos aprobados (0%)</div>
+      <div class="progress-text" id="progressText"></div>
     </div>
 
     <section id="grid" class="grid"></section>
   </main>
 
-  <footer class="footer">
-    Hecho con 💗
-  </footer>
+  <footer class="footer">Hecho con 💗</footer>
 </div>
 
 <script src="script.js"></script>
